@@ -1394,6 +1394,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage-community/plugin-rbac-backend@workspace:plugins/rbac-backend"
   dependencies:
+    "@azure/identity": "npm:^4.0.0"
     "@backstage-community/plugin-rbac-common": "workspace:^"
     "@backstage-community/plugin-rbac-node": "workspace:^"
     "@backstage/backend-defaults": "npm:^0.16.0"
@@ -1408,7 +1409,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "npm:^2.1.0"
     "@backstage/plugin-permission-common": "npm:^0.9.7"
     "@backstage/plugin-permission-node": "npm:^0.10.11"
-    "@backstage/types": "npm:^1.2.2"
     "@dagrejs/graphlib": "npm:^2.1.13"
     "@types/express": "npm:4.17.25"
     "@types/js-yaml": "npm:^4.0.9"

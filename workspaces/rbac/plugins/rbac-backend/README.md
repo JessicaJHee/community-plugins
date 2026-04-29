@@ -288,6 +288,48 @@ The RBAC plugin offers the option to store policies in a database. It supports t
 
 Ensure that you have already configured the database backend for your Backstage instance, as the RBAC plugin utilizes the same database configuration.
 
+#### Azure PostgreSQL Passwordless Authentication
+
+For Azure Database for PostgreSQL, the RBAC plugin supports passwordless authentication using Microsoft Entra ID (formerly Azure Active Directory). This provides enhanced security by using Azure-managed identities or service principals instead of passwords.
+
+To enable Azure passwordless authentication, configure your database connection with `type: azure`:
+
+```yaml
+backend:
+  database:
+    client: pg
+    connection:
+      type: azure
+      host: ${POSTGRES_HOST}
+      user: ${POSTGRES_USER}
+      ssl:
+        rejectUnauthorized: false
+      tokenCredential:
+        # Option 1: Use system-assigned managed identity (no config needed)
+        # Option 2: Use user-assigned managed identity
+        clientId: ${AZURE_CLIENT_ID}
+        # Option 3: Use service principal (requires all three)
+        clientId: ${AZURE_CLIENT_ID}
+        tenantId: ${AZURE_TENANT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
+```
+
+**Authentication methods:**
+
+1. **System-assigned managed identity**: Omit all `tokenCredential` properties
+2. **User-assigned managed identity**: Provide only `clientId`
+3. **Service principal**: Provide `clientId`, `tenantId`, and `clientSecret`
+
+**Token renewal:**
+
+The RBAC plugin automatically handles Azure AD token renewal by leveraging the pg driver's support for password functions. Fresh tokens are fetched on each new database connection, ensuring uninterrupted operation even as tokens expire (typically after 60 minutes). The connection pool is configured with a 50-minute idle timeout to force connection recycling before token expiry.
+
+**Important notes:**
+
+- Ensure your Azure PostgreSQL server has Microsoft Entra authentication enabled and the appropriate database roles configured.
+- The username should be the Entra ID principal name (e.g., `myuser@myserver` for managed identities).
+- The Azure credentials must be available to the application environment (managed identity, environment variables, or Azure CLI).
+
 ### Optional maximum depth
 
 The RBAC plugin also includes an option max depth feature for organizations with potentially complex group hierarchy, this configuration value will ensure that the RBAC plugin will stop at a certain depth when building user graphs.
